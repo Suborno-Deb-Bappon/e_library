@@ -1,0 +1,41 @@
+{% extends 'elibrary/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-8">
+        <h2>{{ ebook.title }}</h2>
+        <p><strong>Authors:</strong> {{ ebook.authors.all|join:", " }}</p>
+        <p><strong>Publication Date:</strong> {{ ebook.publication_date }}</p>
+        <p><strong>Genre:</strong> {{ ebook.genre }}</p>
+        <p><strong>Description:</strong> {{ ebook.description }}</p>
+        <p><strong>Licenses Available:</strong> {{ ebook.licenses }}</p>
+
+        {% if user.is_authenticated %}
+            {% if not active_borrowing %}
+                <a href="{% url 'borrow_ebook' ebook.pk %}" class="btn btn-primary">Borrow</a>
+            {% else %}
+                <p class="text-success">Borrowed - Due: {{ active_borrowing.due_date|date:"F j, Y, P" }}</p>
+                <a href="{% url 'download_ebook' ebook.pk %}" class="btn btn-success">Download PDF</a>
+                <a href="{% url 'return_ebook' ebook.pk %}" class="btn btn-warning">Return</a>
+            {% endif %}
+            <a href="{% url 'rate_ebook' ebook.pk %}" class="btn btn-secondary mt-2">Rate this E-Book</a>
+        {% endif %}
+
+        <h3 class="mt-4">Ratings and Comments</h3>
+        {% for rating in ebook.rating_set.all %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="card-text"><strong>{{ rating.user.username }}</strong> rated: {{ rating.rating }}/5</p>
+                    {% if rating.comment %}
+                        <p class="card-text"><em>{{ rating.comment }}</em></p>
+                    {% endif %}
+                    <p class="card-text text-muted">Posted on {{ rating.created_at|date:"F j, Y, P" }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No ratings yet.</p>
+        {% endfor %}
+
+        <a href="{% url 'ebook_list' %}" class="btn btn-outline-secondary mt-3">Back to Library</a>
+    </div>
+</div>
+{% endblock %}

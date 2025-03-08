@@ -1,0 +1,52 @@
+{% extends 'elibrary/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>Your Dashboard</h2>
+        <h3>Borrowing History</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>E-Book</th>
+                        <th>Borrowed On</th>
+                        <th>Due Date</th>
+                        <th>Returned On</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for borrowing in borrowings %}
+                        <tr>
+                            <td>{{ borrowing.ebook.title }}</td>
+                            <td>{{ borrowing.borrow_date|date:"F j, Y, P" }}</td>
+                            <td>{{ borrowing.due_date|date:"F j, Y, P" }}</td>
+                            <td>{{ borrowing.return_date|date:"F j, Y, P"|default:"-" }}</td>
+                            <td>
+                                {% if borrowing.is_overdue %}
+                                    <span class="badge bg-danger">Overdue</span>
+                                {% elif borrowing.return_date %}
+                                    <span class="badge bg-success">Returned</span>
+                                {% else %}
+                                    <span class="badge bg-info">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not borrowing.return_date %}
+                                    <a href="{% url 'download_ebook' borrowing.ebook.pk %}" class="btn btn-sm btn-success">Download PDF</a>
+                                    <a href="{% url 'return_ebook' borrowing.ebook.pk %}" class="btn btn-sm btn-warning">Return</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">No borrowing history.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

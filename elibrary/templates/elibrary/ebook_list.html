@@ -1,0 +1,25 @@
+{% extends 'elibrary/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">E-Book Library</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for ebook in ebooks %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="{% url 'ebook_detail' ebook.pk %}" class="text-decoration-none">{{ ebook.title }}</a></h5>
+                            <p class="card-text"><strong>Authors:</strong> {{ ebook.authors.all|join:", " }}</p>
+                            <p class="card-text"><strong>Genre:</strong> {{ ebook.genre }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col">
+                    <p>No e-books available.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
